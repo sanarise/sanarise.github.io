@@ -2,7 +2,7 @@
   "version": "1",
   "api_version": 1,
   "layout": {
-    "logo": "http://sanarise.ru/img/delivery.png",
+    "logo": "http://sanarise.ru/img/payment.png",
     "color": "#ffffff",
     "show_title": false
   }
