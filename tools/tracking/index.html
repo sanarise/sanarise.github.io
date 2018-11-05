@@ -179,7 +179,7 @@
       form.addEventListener('input', event => printLinkAndMessage());
       form.addEventListener('submit', event => event.preventDefault());
 
-      navigator.permissions.query({name:'clipboard-read'}).then(function(result) {
+      navigator.permissions.query({name:'clipboard-read', userVisibleOnly: true}).then(function(result) {
         if (result.state === 'granted' || result.state === 'prompt') {
           showCopyLinkButton();
         }
