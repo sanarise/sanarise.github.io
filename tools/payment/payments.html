@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Формирование реквизитов на оплату</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <style type="text/css">
+      body {
+        font-size: 1.1em;
+      }
+
+      #message {
+        width: 100%;
+        height: 300px;
+      }
+
+      .icon {
+        display: block;
+        margin: 20px auto 0;
+      }
+    </style>
+  </head>
+  <body>
+    <img class="icon" src="finance.png" width="128" height="128">
+    <form class="">
+      <label>Имя для обращения: <input id="userNameInput" type="text" name="" placeholder="Имя Пользователя"></label>
+      <br>
+      <label>Приветствовать: <input id="needGreetInput" type="checkbox" name="needGreet"></label>
+      <br>
+      <br>
+      <label>Saninasun СБ@Maestro: <input class="payMethod" type="radio" name="sbCard" value="saninasunSbMaestro" checked></label>
+      <br>
+      <label>Saninasun Тинькофф@MasterCard: <input class="payMethod" type="checkbox" name="saninasunTinkoffMasterCard" checked></label>
+      <br>
+      <br>
+      <label>Sanarise СБ@Visa: <input class="payMethod" type="radio" name="sbCard" value="sanariseSbVisa"></label>
+      <br>
+      <label>Sanarise СБ@Мир: <input class="payMethod" type="radio" name="sbCard" value="sanariseSbMir"></label>
+      <br>
+      <label>Sanarise Яндекс.Деньги: <input class="payMethod" type="checkbox" name="sanariseYaMoney" checked></label>
+      <br>
+      <br>
+      <label>Сообщение: <br><textarea id="message"></textarea></label>
+    </form>
+    <script type="text/javascript">
+      const nameToText = {
+        sanariseSbVisa: "Карта Сбербанка: 4276 8070 1408 0169 на имя Александра Юстиновича Ч.",
+        sanariseSbMir: "Карта Сбербанка: 2202 2010 3554 0935 на имя Александра Юстиновича Ч.",
+        sanariseYaMoney: "Счет в системе Яндекс.Деньги: 410011607747240",
+        saninasunSbMaestro: "Карта Сбербанка: 6762 8007 9006 574935 на имя Александры Аркадьевны В.",
+        saninasunTinkoffMasterCard: "Карта Тинькофф банка: 5536 9137 8734 8602 на имя Александры Аркадьевны В."
+      };
+      const timeToGreeting = {
+        0: "Здравствуйте",
+        11: "Добрый день",
+        18: "Добрый вечер",
+        23: "Здравствуйте",
+      };
+      const userNameInput = document.getElementById("userNameInput");
+      const needGreetInput = document.getElementById("needGreetInput");
+      const paymentMethodInputs = Array.from(document.querySelectorAll("input.payMethod"));
+      const messageElement = document.getElementById("message");
+      const form = document.querySelector('form');
+
+      const makePrevStrings = function () {
+        if (needGreetInput.checked) {
+          const nowHours = (new Date()).getHours();
+          const greetingIndex = Object.keys(timeToGreeting).reduce((acc, hourKey) => nowHours >= hourKey ? hourKey : acc);
+          return [
+            userNameInput.value ?
+              `${userNameInput.value}, ${timeToGreeting[greetingIndex].toLowerCase()}!` :
+              `${timeToGreeting[greetingIndex]}!`,
+            'Произвести оплату можно одним из следующих способов:'
+          ];
+        } else {
+          return [
+            userNameInput.value ?
+              `${userNameInput.value}, произвести оплату можно одним из следующих способов:` :
+              'Произвести оплату можно одним из следующих способов:'
+          ];
+        }
+      };
+
+      const makePostStrings = function () {
+        return [
+          '',
+          'При переводе, пожалуйста, не заполняйте поле «Сообщение получателю».',
+          'Спасибо!'
+        ];
+      };
+
+      const makePaymentMethodList = function () {
+        const sbMethodName = paymentMethodInputs
+          .find(el => el.name === "sbCard" && el.checked).value;
+
+        const otherMethodNames = paymentMethodInputs
+          .filter(el => el.type === "checkbox" && el.checked)
+          .map(el => el.name);
+
+        return [sbMethodName].concat(otherMethodNames)
+          .map(name => nameToText[name])
+          .map(text => ' - ' + text);
+      };
+
+      const makeMessage = function () {
+        return makePrevStrings()
+          .concat(makePaymentMethodList())
+          .concat(makePostStrings())
+          .join('\n');
+      };
+
+      messageElement.value = makeMessage();
+      messageElement.addEventListener('focus', event => messageElement.select());
+
+      form.addEventListener('input', event => messageElement.value = makeMessage());
+      form.addEventListener('submit', event => event.preventDefault());
+
+      userNameInput.focus();
+    </script>
+  </body>
+</html>

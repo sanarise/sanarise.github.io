@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "api_version": 1,
+  "layout": {
+    "logo": "https://sanarise.github.io/img/delivery.png",
+    "color": "#ffffff",
+    "show_title": false
+  }
+}

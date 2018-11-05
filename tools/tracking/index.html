@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="yandex-tableau-widget" content="logo=http://sanarise.github.io/img/delivery.png, color=#ffffff" />
+    <title>Формирование сообщения и ссылки на трекинг</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <style type="text/css">
+      body {
+        font-size: 1.1em;
+      }
+
+      #message {
+        width: 100%;
+        height: 300px;
+      }
+
+      .icon {
+        display: block;
+        margin: 20px auto 0;
+      }
+
+      #copyLinkButton {
+        width: 150px;
+        height: 30px;
+        margin-left: 30px;
+        border: 1px solid black;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 5px;
+
+        background-color: #f2f2f2;
+      }
+
+      #copyLinkButton:hover {
+        background-color: #d1ecfb;
+      }
+      #copyLinkButton:active {
+        background-color: #a6dbeb;
+      }
+      #copyLinkButton.success {
+        background-color: #d1fbe6;
+      }
+      #copyLinkButton.err {
+        background-color: #fbd1d1;
+      }
+    </style>
+  </head>
+  <body>
+    <img class="icon" src="dostavka.png" width="128" height="128">
+    <form class="">
+      <label>Имя для обращения: <input id="userNameInput" type="text" name="" placeholder="Имя Пользователя"></label>
+      <br>
+      <label>Приветствовать: <input id="needGreetInput" type="checkbox" name="needGreet" checked></label>
+      <br>
+      <br>
+      <label>СДЭК: <input class="deliveryService" type="radio" name="deliveryService" value="sdek" ></label>
+      <label>Почта: <input class="deliveryService" type="radio" name="deliveryService" value="post" checked></label>
+      <br>
+      <br>
+      <label>Номер отправления: <input id="trackCodeInput" type="text" name="trackCode"></label>
+      <br>
+      <br>
+      <span>Ссылка на страницу: <a id="trackingLink" href="" target="_blank"></a><span><input id="copyLinkButton" type="button" value="Копировать ссылку">
+      <br>
+      <br>
+      <label>Сообщение: <br><textarea id="message"></textarea></label>
+    </form>
+    <script type="text/javascript">
+      const deliveryNameToText = {
+        sdek: "https://www.cdek.ru/track.html?order_id=",
+        post: "https://www.pochta.ru/tracking#",
+      };
+      const timeToGreeting = {
+        0: "Здравствуйте",
+        11: "Добрый день",
+        18: "Добрый вечер",
+        23: "Здравствуйте",
+      };
+      const userNameInput = document.getElementById("userNameInput");
+      const needGreetInput = document.getElementById("needGreetInput");
+      const deliveryServiceInputs = Array.from(document.querySelectorAll("input.deliveryService"));
+      const trackCodeInput = document.getElementById("trackCodeInput");
+      const trackingLink = document.getElementById("trackingLink");
+      const copyLinkButton = document.getElementById("copyLinkButton");
+      const messageElement = document.getElementById("message");
+      const form = document.querySelector('form');
+
+      const buildTrackingLink = function () {
+        const deliveryName = deliveryServiceInputs
+          .find(el => el.checked).value;
+
+        return deliveryNameToText[deliveryName] + trackCodeInput.value;
+      };
+
+      const makePrevStrings = function () {
+        if (needGreetInput.checked) {
+          const nowHours = (new Date()).getHours();
+          const greetingIndex = Object.keys(timeToGreeting).reduce((acc, hourKey) => nowHours >= hourKey ? hourKey : acc);
+          return [
+            userNameInput.value ?
+              `${userNameInput.value}, ${timeToGreeting[greetingIndex].toLowerCase()}!` :
+              `${timeToGreeting[greetingIndex]}!`,
+            'Ваш заказ отправлен.'
+          ];
+        } else {
+          return [
+            userNameInput.value ?
+              `${userNameInput.value}, ваш заказ отправлен.` :
+              'Ваш заказ отправлен.'
+          ];
+        }
+      };
+
+      const makeTrackingStrings = function (link) {
+        return [
+          `Ссылка на трекинг: ${link}`
+        ];
+      };
+
+      const makePostStrings = function () {
+        return [
+          ''
+        ];
+      };
+
+      const makeMessage = function (link) {
+        return makePrevStrings()
+          .concat(makeTrackingStrings(link))
+          .concat(makePostStrings())
+          .join('\n');
+      };
+
+      const printLinkAndMessage = function () {
+        const link = buildTrackingLink();
+        messageElement.value = makeMessage(link);
+        trackingLink.innerText = link;
+        trackingLink.href = link;
+      };
+
+      printLinkAndMessage();
+      messageElement.addEventListener('focus', event => messageElement.select());
+
+      form.addEventListener('input', event => printLinkAndMessage());
+      form.addEventListener('submit', event => event.preventDefault());
+      copyLinkButton.addEventListener('click', () => {
+        const inputValue = trackingLink.href;
+        if (inputValue) {
+          navigator.clipboard.writeText(inputValue)
+            .then(() => {
+              if (copyLinkButton.value !== 'Скопировано') {
+                const originalText = copyLinkButton.value;
+                copyLinkButton.value = 'Скопировано';
+                copyLinkButton.classList.add('success');
+                setTimeout(() => {
+                  copyLinkButton.value = originalText;
+                  copyLinkButton.classList.remove('success');
+                }, 1500);
+              }
+            })
+            .catch(err => {
+              copyLinkButton.value = 'Ошибка';
+              copyLinkButton.classList.add('err');
+
+              console.log('Something went wrong', err);
+            })
+        }
+      });
+
+      userNameInput.focus();
+    </script>
+  </body>
+</html>
