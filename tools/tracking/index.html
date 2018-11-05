@@ -21,6 +21,8 @@
       }
 
       #copyLinkButton {
+        display: none;
+
         width: 150px;
         height: 30px;
         margin-left: 30px;
@@ -31,6 +33,10 @@
         border-radius: 5px;
 
         background-color: #f2f2f2;
+      }
+
+      #copyLinkButton.shown {
+        display: inline;
       }
 
       #copyLinkButton:hover {
@@ -139,33 +145,45 @@
         trackingLink.href = link;
       };
 
+      const showCopyLinkButton = function () {
+        copyLinkButton.classList.add('shown');
+
+        copyLinkButton.addEventListener('click', () => {
+          const inputValue = trackingLink.href;
+          if (inputValue) {
+            navigator.clipboard.writeText(inputValue)
+              .then(() => {
+                if (copyLinkButton.value !== 'Скопировано') {
+                  const originalText = copyLinkButton.value;
+                  copyLinkButton.value = 'Скопировано';
+                  copyLinkButton.classList.add('success');
+                  setTimeout(() => {
+                    copyLinkButton.value = originalText;
+                    copyLinkButton.classList.remove('success');
+                  }, 1500);
+                }
+              })
+              .catch(err => {
+                copyLinkButton.value = 'Ошибка';
+                copyLinkButton.classList.add('err');
+
+                console.log('Something went wrong', err);
+              })
+          }
+        });
+      };
+
       printLinkAndMessage();
       messageElement.addEventListener('focus', event => messageElement.select());
 
       form.addEventListener('input', event => printLinkAndMessage());
       form.addEventListener('submit', event => event.preventDefault());
-      copyLinkButton.addEventListener('click', () => {
-        const inputValue = trackingLink.href;
-        if (inputValue) {
-          navigator.clipboard.writeText(inputValue)
-            .then(() => {
-              if (copyLinkButton.value !== 'Скопировано') {
-                const originalText = copyLinkButton.value;
-                copyLinkButton.value = 'Скопировано';
-                copyLinkButton.classList.add('success');
-                setTimeout(() => {
-                  copyLinkButton.value = originalText;
-                  copyLinkButton.classList.remove('success');
-                }, 1500);
-              }
-            })
-            .catch(err => {
-              copyLinkButton.value = 'Ошибка';
-              copyLinkButton.classList.add('err');
 
-              console.log('Something went wrong', err);
-            })
+      navigator.permissions.query({name:'clipboard-read'}).then(function(result) {
+        if (result.state === 'granted' || result.state === 'prompt') {
+          showCopyLinkButton();
         }
+        // Don't do anything if the permission was denied.
       });
 
       userNameInput.focus();
