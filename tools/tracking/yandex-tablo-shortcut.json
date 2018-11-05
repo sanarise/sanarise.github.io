@@ -1,9 +1,10 @@
 {
   "version": "1",
   "api_version": 1,
-  "layout": {
-    "logo": "http://sanarise.ru/img/delivery.png?175121112016",
-    "color": "#ffffff",
-    "show_title": false
-  }
+  "layout":
+{
+  "logo": "http://sanarise.ru/img/delivery.png?17512111202",
+  "color": "#f2f3f4",
+  "show_title": false
+}
 }
