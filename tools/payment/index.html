@@ -58,13 +58,29 @@
         18: "Добрый вечер",
         23: "Здравствуйте",
       };
+      const paymentMethodAnnotations = {
+        many: 'Произвести оплату можно одним из следующих способов:',
+        single: 'Произвести оплату можно следующим способом:'
+      };
       const userNameInput = document.getElementById("userNameInput");
       const needGreetInput = document.getElementById("needGreetInput");
       const paymentMethodInputs = Array.from(document.querySelectorAll("input.payMethod"));
       const messageElement = document.getElementById("message");
       const form = document.querySelector('form');
 
+      const getPaymentMethodNames = function () {
+        const sbMethodName = paymentMethodInputs
+          .find(el => el.name === "sbCard" && el.checked).value;
+
+        const otherMethodNames = paymentMethodInputs
+          .filter(el => el.type === "checkbox" && el.checked)
+          .map(el => el.name);
+
+        return [sbMethodName].concat(otherMethodNames);
+      };
+
       const makePrevStrings = function () {
+        const annotaion = getPaymentMethodNames().length > 1 ? paymentMethodAnnotations.many : paymentMethodAnnotations.single;
         if (needGreetInput.checked) {
           const nowHours = (new Date()).getHours();
           const greetingIndex = Object.keys(timeToGreeting).reduce((acc, hourKey) => nowHours >= hourKey ? hourKey : acc);
@@ -72,13 +88,13 @@
             userNameInput.value ?
               `${userNameInput.value}, ${timeToGreeting[greetingIndex].toLowerCase()}!` :
               `${timeToGreeting[greetingIndex]}!`,
-            'Произвести оплату можно одним из следующих способов:'
+            annotaion
           ];
         } else {
           return [
             userNameInput.value ?
-              `${userNameInput.value}, произвести оплату можно одним из следующих способов:` :
-              'Произвести оплату можно одним из следующих способов:'
+              `${userNameInput.value}, ${annotaion.toLowerCase()}` :
+              annotaion
           ];
         }
       };
@@ -92,14 +108,7 @@
       };
 
       const makePaymentMethodList = function () {
-        const sbMethodName = paymentMethodInputs
-          .find(el => el.name === "sbCard" && el.checked).value;
-
-        const otherMethodNames = paymentMethodInputs
-          .filter(el => el.type === "checkbox" && el.checked)
-          .map(el => el.name);
-
-        return [sbMethodName].concat(otherMethodNames)
+        return getPaymentMethodNames()
           .map(name => nameToText[name])
           .map(text => ' - ' + text);
       };
