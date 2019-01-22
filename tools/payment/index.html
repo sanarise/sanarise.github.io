@@ -44,16 +44,20 @@
       <label>Sanarise Яндекс.Деньги: <input class="payMethod" type="checkbox" name="sanariseYaMoney"></label>
       <br>
       <br>
+      <label>Сумма: <input id="paymentSumInput" type="text" name="paymentSum" value="0"></label>&nbsp;
+      <input id="needPaymentInput" type="checkbox" name="needPayment">
+      <br>
+      <br>
       <label>Сообщение: <br><textarea id="message"></textarea></label>
     </form>
     <script type="text/javascript">
       const nameToText = {
-        sanariseSbVisa: "Карта Сбербанка: 4276 8070 1408 0169 на имя Александра Юстиновича Ч.",
-        sanariseSbMir: "Карта Сбербанка: 2202 2010 3554 0935 на имя Александра Юстиновича Ч.",
-        sanariseYaMoney: "Счет в системе Яндекс.Деньги: 410011607747240",
-        saninasunSbMaestro: "Карта Сбербанка: 6762 8007 9006 574935 на имя Александры Аркадьевны В.",
-        saninasunTinkoffMasterCard: "Карта Тинькофф банка: 5536 9137 8734 8602 на имя Александры Аркадьевны В.",
-        saninasunMobile: "Счет мобильного телефона: +7 920 594 1959"
+        sanariseSbVisa: () => "Карта Сбербанка: 4276 8070 1408 0169 на имя Александра Юстиновича Ч.",
+        sanariseSbMir: () => "Карта Сбербанка: 2202 2010 3554 0935 на имя Александра Юстиновича Ч.",
+        sanariseYaMoney: () => `Ссылка на оплату в системе Яндекс.Деньги: ${makeYandexLink()}`,
+        saninasunSbMaestro: () => "Карта Сбербанка: 6762 8007 9006 574935 на имя Александры Аркадьевны В.",
+        saninasunTinkoffMasterCard: () => "Карта Тинькофф банка: 5536 9137 8734 8602 на имя Александры Аркадьевны В.",
+        saninasunMobile: () => "Счет мобильного телефона: +7 920 594 1959"
       };
       const timeToGreeting = {
         0: "Здравствуйте",
@@ -68,6 +72,8 @@
       const userNameInput = document.getElementById("userNameInput");
       const needGreetInput = document.getElementById("needGreetInput");
       const paymentMethodInputs = Array.from(document.querySelectorAll("input.payMethod"));
+      const paymentSumInput = document.getElementById("paymentSumInput");
+      const needPaymentInput = document.getElementById("needPaymentInput");
       const messageElement = document.getElementById("message");
       const form = document.querySelector('form');
 
@@ -84,22 +90,39 @@
 
       const makePrevStrings = function () {
         const annotaion = getPaymentMethodNames().length > 1 ? paymentMethodAnnotations.many : paymentMethodAnnotations.single;
+        const paymentText = `Сумма для оплаты составит ${paymentSumInput.value} рублей.`;
         if (needGreetInput.checked) {
           const nowHours = (new Date()).getHours();
           const greetingIndex = Object.keys(timeToGreeting).reduce((acc, hourKey) => nowHours >= hourKey ? hourKey : acc);
-          return [
+          let result = [
             userNameInput.value ?
               `${userNameInput.value}, ${timeToGreeting[greetingIndex].toLowerCase()}!` :
-              `${timeToGreeting[greetingIndex]}!`,
-            annotaion
+              `${timeToGreeting[greetingIndex]}!`
           ];
+          if (needPaymentInput.checked) {
+            result.push(paymentText);
+          }
+          result.push(annotaion);
+          return result;
         } else {
-          return [
-            userNameInput.value ?
-              `${userNameInput.value}, ${annotaion.toLowerCase()}` :
-              annotaion
-          ];
+          let result = needPaymentInput.checked ? [paymentText] : [];
+          result.push(annotaion);
+          if (userNameInput.value) {
+            result[0] = `${userNameInput.value}, ${result[0].toLowerCase()}`
+          }
+          return result;
         }
+      };
+
+      const makeYandexLink = function () {
+        return 'https://money.yandex.ru/to/410011607747240' +
+          (Number(paymentSumInput.value) > 0 ? '/' + paymentSumInput.value : '');
+      };
+
+      const makePaymentMethodList = function () {
+        return getPaymentMethodNames()
+          .map(name => nameToText[name]())
+          .map(text => ' - ' + text);
       };
 
       const makePostStrings = function () {
@@ -108,12 +131,6 @@
           'При переводе на карту, пожалуйста, не заполняйте поле «Сообщение получателю».',
           'Спасибо!'
         ];
-      };
-
-      const makePaymentMethodList = function () {
-        return getPaymentMethodNames()
-          .map(name => nameToText[name])
-          .map(text => ' - ' + text);
       };
 
       const makeMessage = function () {
