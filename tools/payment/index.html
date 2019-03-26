@@ -51,102 +51,102 @@
       <label>Сообщение: <br><textarea id="message"></textarea></label>
     </form>
     <script type="text/javascript">
-      const nameToText = {
-        sanariseSbVisa: () => "Карта Сбербанка: 4276 8070 1408 0169 на имя Александра Юстиновича Ч.",
-        sanariseSbMir: () => "Карта Сбербанка: 2202 2010 3554 0935 на имя Александра Юстиновича Ч.",
-        sanariseYaMoney: () => `Ссылка на оплату в системе Яндекс.Деньги: ${makeYandexLink()}`,
-        saninasunSbMaestro: () => "Карта Сбербанка: 6762 8007 9006 574935 на имя Александры Аркадьевны В.",
-        saninasunTinkoffMasterCard: () => "Карта Тинькофф банка: 5536 9137 8734 8602 на имя Александры Аркадьевны В.",
-        saninasunMobile: () => "Счет мобильного телефона: +7 920 594 1959"
-      };
-      const timeToGreeting = {
-        0: "Здравствуйте",
-        11: "Добрый день",
-        18: "Добрый вечер",
-        23: "Здравствуйте",
-      };
-      const paymentMethodAnnotations = {
-        many: 'Произвести оплату можно одним из следующих способов:',
-        single: 'Произвести оплату можно следующим способом:'
-      };
-      const userNameInput = document.getElementById("userNameInput");
-      const needGreetInput = document.getElementById("needGreetInput");
-      const paymentMethodInputs = Array.from(document.querySelectorAll("input.payMethod"));
-      const paymentSumInput = document.getElementById("paymentSumInput");
-      const needPaymentInput = document.getElementById("needPaymentInput");
-      const messageElement = document.getElementById("message");
-      const form = document.querySelector('form');
+     const nameToText = {
+         sanariseSbVisa: () => "Карта Сбербанка: 4276 8070 1408 0169 на имя Александра Юстиновича Ч.",
+         sanariseSbMir: () => "Карта Сбербанка: 2202 2010 3554 0935 на имя Александра Юстиновича Ч.",
+         sanariseYaMoney: () => `Ссылка на оплату в системе Яндекс.Деньги: ${makeYandexLink()}`,
+         saninasunSbMaestro: () => "Карта Сбербанка: 6762 8007 9006 574935 на имя Александры Аркадьевны В.",
+         saninasunTinkoffMasterCard: () => "Карта Тинькофф банка: 5536 9137 8734 8602 на имя Александры Аркадьевны В.",
+         saninasunMobile: () => "Счет мобильного телефона: +7 920 594 1959"
+     };
+     const timeToGreeting = {
+         0: "Здравствуйте",
+         11: "Добрый день",
+         18: "Добрый вечер",
+         23: "Здравствуйте",
+     };
+     const paymentMethodAnnotations = {
+         many: 'Произвести оплату можно одним из следующих способов:',
+         single: 'Произвести оплату можно следующим способом:'
+     };
+     const userNameInput = document.getElementById("userNameInput");
+     const needGreetInput = document.getElementById("needGreetInput");
+     const paymentMethodInputs = Array.from(document.querySelectorAll("input.payMethod"));
+     const paymentSumInput = document.getElementById("paymentSumInput");
+     const needPaymentInput = document.getElementById("needPaymentInput");
+     const messageElement = document.getElementById("message");
+     const form = document.querySelector('form');
 
-      const getPaymentMethodNames = function () {
-        const sbMethodName = paymentMethodInputs
-          .find(el => el.name === "sbCard" && el.checked).value;
+     const getPaymentMethodNames = function () {
+         const sbMethodName = paymentMethodInputs
+             .find(el => el.name === "sbCard" && el.checked).value;
 
-        const otherMethodNames = paymentMethodInputs
-          .filter(el => el.type === "checkbox" && el.checked)
-          .map(el => el.name);
+         const otherMethodNames = paymentMethodInputs
+             .filter(el => el.type === "checkbox" && el.checked)
+             .map(el => el.name);
 
-        return [sbMethodName].concat(otherMethodNames);
-      };
+         return [sbMethodName].concat(otherMethodNames);
+     };
 
-      const makePrevStrings = function () {
-        const annotaion = getPaymentMethodNames().length > 1 ? paymentMethodAnnotations.many : paymentMethodAnnotations.single;
-        const paymentText = `Сумма для оплаты составит ${paymentSumInput.value} рублей.`;
-        if (needGreetInput.checked) {
-          const nowHours = (new Date()).getHours();
-          const greetingIndex = Object.keys(timeToGreeting).reduce((acc, hourKey) => nowHours >= hourKey ? hourKey : acc);
-          let result = [
-            userNameInput.value ?
-              `${userNameInput.value}, ${timeToGreeting[greetingIndex].toLowerCase()}!` :
-              `${timeToGreeting[greetingIndex]}!`
-          ];
-          if (needPaymentInput.checked) {
-            result.push(paymentText);
-          }
-          result.push(annotaion);
-          return result;
-        } else {
-          let result = needPaymentInput.checked ? [paymentText] : [];
-          result.push(annotaion);
-          if (userNameInput.value) {
-            result[0] = `${userNameInput.value}, ${result[0].toLowerCase()}`
-          }
-          return result;
-        }
-      };
+     const makePrevStrings = function () {
+         const annotaion = getPaymentMethodNames().length > 1 ? paymentMethodAnnotations.many : paymentMethodAnnotations.single;
+         const paymentText = `Сумма для оплаты составит ${paymentSumInput.value} рублей.`;
+         if (needGreetInput.checked) {
+             const nowHours = (new Date()).getHours();
+             const greetingIndex = Object.keys(timeToGreeting).reduce((acc, hourKey) => nowHours >= hourKey ? hourKey : acc);
+             let result = [
+                 userNameInput.value ?
+                 `${userNameInput.value}, ${timeToGreeting[greetingIndex].toLowerCase()}!` :
+                 `${timeToGreeting[greetingIndex]}!`
+             ];
+             if (needPaymentInput.checked) {
+                 result.push(paymentText);
+             }
+             result.push(annotaion);
+             return result;
+         } else {
+             let result = needPaymentInput.checked ? [paymentText] : [];
+             result.push(annotaion);
+             if (userNameInput.value) {
+                 result[0] = `${userNameInput.value}, ${result[0].toLowerCase()}`
+             }
+             return result;
+         }
+     };
 
-      const makeYandexLink = function () {
-        return 'https://money.yandex.ru/to/410011607747240' +
-          (Number(paymentSumInput.value) > 0 ? '/' + paymentSumInput.value : '');
-      };
+     const makeYandexLink = function () {
+         return 'https://money.yandex.ru/to/410019039005068' +
+            (Number(paymentSumInput.value) > 0 ? '/' + paymentSumInput.value : '');
+     };
 
-      const makePaymentMethodList = function () {
-        return getPaymentMethodNames()
-          .map(name => nameToText[name]())
-          .map(text => ' - ' + text);
-      };
+     const makePaymentMethodList = function () {
+         return getPaymentMethodNames()
+             .map(name => nameToText[name]())
+             .map(text => ' - ' + text);
+     };
 
-      const makePostStrings = function () {
-        return [
-          '',
-          'При переводе на карту, пожалуйста, не заполняйте поле «Сообщение получателю».',
-          'Спасибо!'
-        ];
-      };
+     const makePostStrings = function () {
+         return [
+             '',
+             'При переводе на карту, пожалуйста, не заполняйте поле «Сообщение получателю».',
+             'Спасибо!'
+         ];
+     };
 
-      const makeMessage = function () {
-        return makePrevStrings()
-          .concat(makePaymentMethodList())
-          .concat(makePostStrings())
-          .join('\n');
-      };
+     const makeMessage = function () {
+         return makePrevStrings()
+             .concat(makePaymentMethodList())
+             .concat(makePostStrings())
+             .join('\n');
+     };
 
-      messageElement.value = makeMessage();
-      messageElement.addEventListener('focus', event => messageElement.select());
+     messageElement.value = makeMessage();
+     messageElement.addEventListener('focus', event => messageElement.select());
 
-      form.addEventListener('input', event => messageElement.value = makeMessage());
-      form.addEventListener('submit', event => event.preventDefault());
+     form.addEventListener('input', event => messageElement.value = makeMessage());
+     form.addEventListener('submit', event => event.preventDefault());
 
-      userNameInput.focus();
+     userNameInput.focus();
     </script>
   </body>
 </html>
