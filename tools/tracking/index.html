@@ -64,6 +64,13 @@
       <br>
       <label>СДЭК: <input class="deliveryService" type="radio" name="deliveryService" value="sdek" ></label>
       <label>Почта: <input class="deliveryService" type="radio" name="deliveryService" value="post" checked></label>
+      <span id="cdekPaymentSubform">
+        <br>
+        <br>
+        <label>тариф: <input id="cdekTariffInput" type="text" name="cdekTariff"></label>
+        <label>оценка: <input id="cdekCostInput" type="text" name="cdekCost"></label>
+        <label>доп. сбор: <input id="cdekPaymentInput" type="text" name="cdekPayment" readonly style="font-weight: bold;"></label>
+      </span>
       <br>
       <br>
       <label>Номер отправления: <input id="trackCodeInput" type="text" name="trackCode"></label>
@@ -92,6 +99,10 @@
       const trackingLink = document.getElementById("trackingLink");
       const copyLinkButton = document.getElementById("copyLinkButton");
       const messageElement = document.getElementById("message");
+      const cdekPaymentSubform = document.getElementById("cdekPaymentSubform");
+      const cdekTariffInput = document.getElementById("cdekTariffInput");
+      const cdekCostInput = document.getElementById("cdekCostInput");
+      const cdekPaymentInput = document.getElementById("cdekPaymentInput");
       const form = document.querySelector('form');
 
       const buildTrackingLink = function () {
@@ -146,6 +157,19 @@
         trackingLink.href = link;
       };
 
+      const showCdekPaymentSubform = function () {
+        const deliveryName = deliveryServiceInputs
+          .find(el => el.checked).value;
+
+        cdekPaymentSubform.style.display = deliveryName == 'sdek' ? '' : 'none';
+      };
+
+      const calcCdekPayment = function () {
+        const tariff = Number(cdekTariffInput.value);
+        const cost = Number(cdekCostInput.value);
+        cdekPaymentInput.value = Math.round((tariff + 0.0075 * cost) / 0.97 + 150);
+      };
+
       const showCopyLinkButton = function () {
         copyLinkButton.classList.add('shown');
 
@@ -174,11 +198,20 @@
         });
       };
 
+      showCdekPaymentSubform();
       printLinkAndMessage();
       messageElement.addEventListener('focus', event => messageElement.select());
 
       form.addEventListener('input', event => printLinkAndMessage());
       form.addEventListener('submit', event => event.preventDefault());
+
+      deliveryServiceInputs.forEach(item => {
+        item.addEventListener('input', event => showCdekPaymentSubform());
+      });
+
+      [cdekTariffInput, cdekCostInput].forEach(item => {
+        item.addEventListener('input', event => calcCdekPayment());
+      });
 
       navigator.permissions.query({name:'clipboard-write', userVisibleOnly: true}).then(function(result) {
         if (result.state === 'granted' || result.state === 'prompt') {
