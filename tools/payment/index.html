@@ -30,7 +30,9 @@
       <label>Приветствовать: <input id="needGreetInput" type="checkbox" name="needGreet"></label>
       <br>
       <br>
-      <label>Saninasun СБ@Maestro: <input class="payMethod" type="radio" name="sbCard" value="saninasunSbMaestro" checked></label>
+      <label>Saninasun СБ@Maestro: <input class="payMethod" type="radio" name="sbCard" value="saninasunSbMaestro"></label>
+      <br>
+      <label>Saninasun СБ@Мир: <input class="payMethod" type="radio" name="sbCard" value="saninasunSbMir" checked></label>
       <br>
       <label>Saninasun Тинькофф@MasterCard: <input class="payMethod" type="checkbox" name="saninasunTinkoffMasterCard" checked></label>
       <br>
@@ -56,6 +58,7 @@
          // sanariseSbMir: () => "Карта Сбербанка: 2202 2010 3554 0935 на имя Александра Юстиновича Ч.",
          saninasunYaMoney: () => `Ссылка на оплату в системе Яндекс.Деньги: ${makeYandexLink()}`,
          saninasunSbMaestro: () => "Карта Сбербанка: 6762 8007 9006 574935 на имя Александры Аркадьевны В.",
+         saninasunSbMir: () => "Карта Сбербанка: 2202 2012 0743 6730 на имя Александры Аркадьевны В.",
          saninasunTinkoffMasterCard: () => "Карта Тинькофф банка: 5536 9137 8734 8602 на имя Александры Аркадьевны В.",
          saninasunMobile: () => "Счет мобильного телефона: +7 920 594 1959"
      };
