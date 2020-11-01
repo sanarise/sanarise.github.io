@@ -105,14 +105,18 @@
       const cdekPaymentInput = document.getElementById("cdekPaymentInput");
       const form = document.querySelector('form');
 
+      const getDeliveryName = function () {
+        return deliveryServiceInputs.find(el => el.checked).value;
+      };
+
       const buildTrackingLink = function () {
-        const deliveryName = deliveryServiceInputs
-          .find(el => el.checked).value;
+        const deliveryName = getDeliveryName();
 
         return deliveryNameToText[deliveryName] + trackCodeInput.value;
       };
 
       const makePrevStrings = function () {
+        const parcelId = trackCodeInput.value;
         if (needGreetInput.checked) {
           const nowHours = (new Date()).getHours();
           const greetingIndex = Object.keys(timeToGreeting).reduce((acc, hourKey) => nowHours >= hourKey ? hourKey : acc);
@@ -120,26 +124,27 @@
             userNameInput.value ?
               `${userNameInput.value}, ${timeToGreeting[greetingIndex].toLowerCase()}!` :
               `${timeToGreeting[greetingIndex]}!`,
-            'Ваш заказ отправлен.'
+            `Трек номер отправления: ${parcelId}` 
           ];
         } else {
           return [
             userNameInput.value ?
-              `${userNameInput.value}, ваш заказ отправлен.` :
-              'Ваш заказ отправлен.'
+              `${userNameInput.value}, трек номер отправления: ${parcelId}` :
+              `Трек номер отправления: ${parcelId}`
           ];
         }
       };
 
       const makeTrackingStrings = function (link) {
         return [
-          `Ссылка на трекинг: ${link}`
+          `Отследить заказа можно по ссылке: ${link}`
         ];
       };
 
       const makePostStrings = function () {
+        const deliveryName = getDeliveryName();
         return [
-          ''
+          deliveryName === 'sdek' ? 'Посылка застрахована. При получении проверьте, пожалуйста, упаковку на целостность!' : ''
         ];
       };
 
